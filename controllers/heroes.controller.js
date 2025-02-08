@@ -1,4 +1,4 @@
-const Hero = require('../models/Hero');
+const Hero = require('../models/heroes.model');
 exports.getHeroes = async (req, res) => {
   try {
     const heroes = await Hero.find();

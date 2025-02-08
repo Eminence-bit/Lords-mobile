@@ -1,11 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Lords Mobile App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lords Mobile Battle Simulator</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <h1>Welcome to Lords Mobile App</h1>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/api/users/login">Sign In</a></li>
+        <li><a href="/api/users/register">Sign Up</a></li>
+        <li><a href="/contact">Contact Us</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section class="intro">
+      <h1>Welcome to Lords Mobile Battle Simulator</h1>
+      <p>
+        Discover the ultimate tool to optimize your Colosseum battle lineups. Our simulator lets you enter enemy formations and receive strategic hero lineups to maximize your win potential.
+      </p>
+      <p>
+        Whether you're a casual player or a seasoned strategist, our tool offers personalized recommendations based on your hero inventory, ensuring you always stay ahead in battle.
+      </p>
+      <div class="actions">
+        <a href="/api/users/login" class="btn">Sign In</a>
+        <a href="/api/users/register" class="btn">Sign Up</a>
+      </div>
+    </section>
+    <section class="promo">
+      <h2>Why Use Our Simulator?</h2>
+      <ul>
+        <li>Real-time battle simulations with accurate predictions.</li>
+        <li>Personalized hero lineup recommendations.</li>
+        <li>Easy inventory management for your heroes.</li>
+      </ul>
+    </section>
+    <section class="contact">
+      <h2>Contact Us</h2>
+      <p>
+        Have questions or feedback? Email us at <a href="mailto:support@lordsmobileapp.com">support@lordsmobileapp.com</a>.
+      </p>
+    </section>
+  </main>
+  <footer>
+    <p>&copy; <%= new Date().getFullYear() %> Lords Mobile Battle Simulator. All rights reserved.</p>
+  </footer>
 </body>
 </html>

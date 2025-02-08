@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Battle Simulation</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/inventory">Inventory</a></li>
+        <li><a href="/contact">Contact Us</a></li>
+        <li><a href="/logout">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <h1>Battle Simulation</h1>
+    <form action="/simulate" method="post">
+      <textarea name="enemyLineup" placeholder="Enter enemy lineup details" required></textarea>
+      <button type="submit">Simulate</button>
+    </form>
+    <% if(simulationResult) { %>
+      <div id="simulationResult">
+        <h2>Simulation Result</h2>
+        <p><%= simulationResult %></p>
+      </div>
+    <% } %>
+  </main>
+  <footer>
+    <p>&copy; <%= new Date().getFullYear() %> Lords Mobile Battle Simulator</p>
+  </footer>
+</body>
+</html>

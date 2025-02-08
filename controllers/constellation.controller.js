@@ -1,4 +1,4 @@
-const Constellation = require('../models/Constellation');
+const Constellation = require('../models/constellation.model');
 exports.getConstellations = async (req, res) => {
   try {
     const constellations = await Constellation.find();
