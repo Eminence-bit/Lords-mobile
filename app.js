@@ -35,9 +35,17 @@ app.get('/register', (req, res) => {
 app.get('/inventory', (req, res) => {
   res.render('inventory', { inventory: [] });
 });
-app.get('/simulation', (req, res) => {
-  res.render('simulation');
-});
+
+const Hero = require('./models/heroes.model');
+
+app.get('/simulation', async (req, res) => {
+    try {
+      const heroes = await Hero.find();
+      res.render('simulation', { heroes });
+    } catch (error) {
+      res.render('simulation', { heroes: [] });
+    }
+  });
 app.get('/contact', (req, res) => {
   res.render('contact');
 });
