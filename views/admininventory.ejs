@@ -1,0 +1,75 @@
+<!-- admininventory.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Inventory</title>
+  <link rel="stylesheet" href="/public/css/style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/admin/heroes">Admin Inventory</a></li>
+        <li><a href="/simulation">Simulation</a></li>
+        <li><a href="/logout">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <h1>Admin Inventory - Manage Heroes</h1>
+    <div id="heroesTable">
+      <!-- The table will be populated by JavaScript -->
+    </div>
+  </main>
+  <footer>
+    <p>&copy; <%= new Date().getFullYear() %> Lords Mobile Battle Simulator</p>
+  </footer>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        // Redirect to login page or show an error
+        window.location.href = '/login';
+        return;
+      }
+      fetch('/admin/heroes', {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Unauthorized');
+        return response.json();
+      })
+      .then(data => {
+        let tableHtml = '<table><thead><tr><th>Name</th><th>Type</th><th>HP</th><th>ATK</th><th>MATK</th><th>Actions</th></tr></thead><tbody>';
+        data.forEach(hero => {
+          tableHtml += `<tr>
+            <td>${hero.name}</td>
+            <td>${hero.heroType}</td>
+            <td>${hero.stats.hp}</td>
+            <td>${hero.stats.atk}</td>
+            <td>${hero.stats.matk}</td>
+            <td>
+              <a href="/admin/heroes/edit/${hero._id}">Edit</a>
+              <form action="/admin/heroes/delete/${hero._id}" method="post" style="display:inline;">
+                <button type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>`;
+        });
+        tableHtml += '</tbody></table>';
+        document.getElementById('heroesTable').innerHTML = tableHtml;
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById('heroesTable').innerHTML = '<p>Error loading heroes. Please try again.</p>';
+      });
+    });
+  </script>
+</body>
+</html>

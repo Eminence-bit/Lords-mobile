@@ -15,10 +15,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 const heroRoutes = require('./routers/heroes.routes');
 const constellationRoutes = require('./routers/constellation.routes');
 const userRoutes = require('./routers/user.routes');
+const inventoryRoutes = require('./routers/inventoryRoutes');
+const adminHeroRoutes = require('./routers/adminHeroRoutes');
 
 app.use('/api/heroes', heroRoutes);
 app.use('/api/constellations', constellationRoutes);
 app.use('/api/users', userRoutes);
+app.use('/inventory', inventoryRoutes);
+app.use('/admin/heroes', adminHeroRoutes);
+
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -33,7 +38,12 @@ app.get('/register', (req, res) => {
   res.render('register');
 });
 app.get('/inventory', (req, res) => {
-  res.render('inventory', { inventory: [] });
+  const inventory = [];
+  try{
+    res.render('inventory', { inventory });
+  }catch(err){
+    res.status(500).send(err.message);
+  }
 });
 
 const Hero = require('./models/heroes.model');
@@ -50,8 +60,9 @@ app.get('/contact', (req, res) => {
   res.render('contact');
 });
 app.get('/logout', (req, res) => {
+  localStorage.clear();
   res.redirect('/');
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => console.log('Server running on port ' + PORT));

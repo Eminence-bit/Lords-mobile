@@ -1,14 +1,15 @@
-require('dotenv').config();
-const User = require('../models/user.model');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+require("dotenv").config();
+const User = require("../models/user.model");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
 exports.register = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ username, email, password: hashedPassword, role });
     await user.save();
-    res.json(user);
+    res.render("login");
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -17,18 +18,27 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+    if (!user) return res.status(401).json({ error: "Invalid credentials" });
     const valid = await bcrypt.compare(password, user.password);
-    if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET_TOKEN, { expiresIn: '1d' });
-    res.json({ token });
+    if (!valid) return res.status(401).json({ error: "Invalid credentials" });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET_TOKEN,
+      { expiresIn: "1d" }
+    );
+    if (user.role === "admin") {
+      res.render("admininventory", { token: token });
+      localStorage;
+    } else {
+      res.render("inventory", { inventory: user.inventory, token: token });
+    }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 exports.getInventory = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).populate('inventory');
+    const user = await User.findById(req.user.id).populate("inventory");
     res.json(user.inventory);
   } catch (err) {
     res.status(500).json({ error: err.message });
