@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Hero</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/admin/heroes">Admin Inventory</a></li>
+                <li><a href="/simulation">Simulation</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Edit Hero</h1>
+        <form id="editHeroForm">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="heroType">Hero Type:</label>
+                <input type="text" id="heroType" name="heroType" required>
+            </div>
+
+            <h3>Base Attributes</h3>
+            <div class="form-group">
+                <label for="strength">Strength:</label>
+                <input type="number" id="strength" name="baseAttributes[strength]" required min="1">
+            </div>
+            <div class="form-group">
+                <label for="intelligence">Intelligence:</label>
+                <input type="number" id="intelligence" name="baseAttributes[intelligence]" required min="1">
+            </div>
+            <div class="form-group">
+                <label for="dexterity">Dexterity:</label>
+                <input type="number" id="dexterity" name="baseAttributes[dexterity]" required min="1">
+            </div>
+
+            <h3>Stats</h3>
+            <div class="form-group">
+                <label for="hp">HP:</label>
+                <input type="number" id="hp" name="stats[hp]" required min="1">
+            </div>
+            <div class="form-group">
+                <label for="atk">ATK:</label>
+                <input type="number" id="atk" name="stats[atk]" required min="1">
+            </div>
+            <div class="form-group">
+                <label for="matk">MATK:</label>
+                <input type="number" id="matk" name="stats[matk]" required min="1">
+            </div>
+            <div class="form-group">
+                <label for="def">DEF:</label>
+                <input type="number" id="def" name="stats[def]" required min="1">
+            </div>
+            <div class="form-group">
+                <label for="mdef">MDEF:</label>
+                <input type="number" id="mdef" name="stats[mdef]" required min="1">
+            </div>
+            <div class="form-group">
+                <label for="physicalCritical">Physical Critical:</label>
+                <input type="number" id="physicalCritical" name="stats[physicalCritical]" required min="0" max="100">
+            </div>
+            <div class="form-group">
+                <label for="magicCritical">Magic Critical:</label>
+                <input type="number" id="magicCritical" name="stats[magicCritical]" required min="0" max="100">
+            </div>
+
+            <button type="submit">Update Hero</button>
+        </form>
+        <div id="message"></div>
+    </main>
+
+    <footer>
+        <p>&copy; <script>document.write(new Date().getFullYear())</script> Lords Mobile Battle Simulator</p>
+    </footer>
+
+    <script>
+        // Get hero ID from URL
+        const heroId = window.location.pathname.split('/').pop();
+
+        // Fetch hero data and populate form
+        async function fetchHeroData() {
+            try {
+                const response = await fetch(`/api/heroes/${heroId}`, {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+                if (!response.ok) throw new Error('Failed to fetch hero data');
+                
+                const hero = await response.json();
+                
+                // Populate form fields
+                document.getElementById('name').value = hero.name;
+                document.getElementById('heroType').value = hero.heroType;
+                document.getElementById('strength').value = hero.baseAttributes.strength;
+                document.getElementById('intelligence').value = hero.baseAttributes.intelligence;
+                document.getElementById('dexterity').value = hero.baseAttributes.dexterity;
+                document.getElementById('hp').value = hero.stats.hp;
+                document.getElementById('atk').value = hero.stats.atk;
+                document.getElementById('matk').value = hero.stats.matk;
+                document.getElementById('def').value = hero.stats.def;
+                document.getElementById('mdef').value = hero.stats.mdef;
+                document.getElementById('physicalCritical').value = hero.stats.physicalCritical;
+                document.getElementById('magicCritical').value = hero.stats.magicCritical;
+            } catch (error) {
+                showMessage(error.message, 'error');
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('editHeroForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                heroType: document.getElementById('heroType').value,
+                baseAttributes: {
+                    strength: parseInt(document.getElementById('strength').value),
+                    intelligence: parseInt(document.getElementById('intelligence').value),
+                    dexterity: parseInt(document.getElementById('dexterity').value)
+                },
+                stats: {
+                    hp: parseInt(document.getElementById('hp').value),
+                    atk: parseInt(document.getElementById('atk').value),
+                    matk: parseInt(document.getElementById('matk').value),
+                    def: parseInt(document.getElementById('def').value),
+                    mdef: parseInt(document.getElementById('mdef').value),
+                    physicalCritical: parseInt(document.getElementById('physicalCritical').value),
+                    magicCritical: parseInt(document.getElementById('magicCritical').value)
+                }
+            };
+
+            try {
+                const response = await fetch(`/admin/heroes/edit/${heroId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    window.location.href = '/admin/heroes';
+                } else {
+                    const data = await response.json();
+                    throw new Error(data.message || 'Error updating hero');
+                }
+            } catch (error) {
+                showMessage(error.message, 'error');
+            }
+        });
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = type;
+            messageDiv.textContent = message;
+            messageDiv.style.display = 'block';
+        }
+
+        // Load hero data when page loads
+        fetchHeroData();
+    </script>
+</body>
+</html>

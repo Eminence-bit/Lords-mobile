@@ -1,0 +1,195 @@
+-mobile/public/simulation.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battle Simulation</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/home.html">Dashboard</a></li>
+                <li><a href="/inventory.html">Inventory</a></li>
+                <li><a href="#" id="logoutButton">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1>Battle Simulation</h1>
+        <form id="simulationForm">
+            <section>
+                <h2>Select Enemy Lineup (Pick 5)</h2>
+                <div id="heroGrid" class="hero-grid">
+                    <!-- Heroes will be dynamically loaded here -->
+                </div>
+                <input type="hidden" id="enemyLineup" name="enemyLineup">
+                <button type="button" id="confirmLineup">Confirm Lineup</button>
+            </section>
+            <section id="boostSection" style="display:none;">
+                <h2>Select Constellation Boosts</h2>
+                <div id="boostFields">
+                    <div class="boost-field">
+                        <select name="boosts[0][type]">
+                            <option value="">Select Boost</option>
+                            <option value="hp">HP</option>
+                            <option value="atk">ATK</option>
+                            <option value="matk">MATK</option>
+                            <option value="def">DEF</option>
+                            <option value="mdef">MDEF</option>
+                            <option value="physicalCritical">Physical Critical</option>
+                            <option value="magicCritical">Magic Critical</option>
+                        </select>
+                        <input type="number" name="boosts[0][value]" placeholder="Value" step="0.01" min="0" max="100" />
+                    </div>
+                </div>
+                <button type="button" id="addBoost">Add Boost</button>
+            </section>
+            <button type="submit">Simulate Battle</button>
+        </form>
+        <div id="simulationResult" class="simulation-result" style="display:none;"></div>
+    </main>
+    <footer>
+        <p>&copy; <script>document.write(new Date().getFullYear())</script> Lords Mobile Battle Simulator</p>
+    </footer>
+
+    <script>
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', async function() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login.html';
+                return;
+            }
+
+            try {
+                // Fetch heroes
+                const response = await fetch('/api/heroes', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const heroes = await response.json();
+                
+                // Populate hero grid
+                const heroGrid = document.getElementById('heroGrid');
+                heroes.forEach(hero => {
+                    const card = document.createElement('div');
+                    card.className = 'hero-card';
+                    card.setAttribute('data-id', hero._id);
+                    card.innerHTML = `
+                        <p>${hero.name}</p>
+                        <p>${hero.heroType}</p>
+                    `;
+                    heroGrid.appendChild(card);
+                });
+
+                // Initialize hero selection
+                initializeHeroSelection();
+            } catch (error) {
+                console.error('Error loading heroes:', error);
+            }
+        });
+
+        function initializeHeroSelection() {
+            const heroCards = document.querySelectorAll('.hero-card');
+            const enemyLineupInput = document.getElementById('enemyLineup');
+            let selectedHeroes = [];
+            
+            heroCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const heroId = this.getAttribute('data-id');
+                    if (this.classList.contains('selected')) {
+                        this.classList.remove('selected');
+                        selectedHeroes = selectedHeroes.filter(id => id !== heroId);
+                    } else {
+                        if (selectedHeroes.length < 5) {
+                            this.classList.add('selected');
+                            selectedHeroes.push(heroId);
+                        } else {
+                            alert('You can only select 5 heroes.');
+                        }
+                    }
+                });
+            });
+            
+            // Handle lineup confirmation
+            document.getElementById('confirmLineup').addEventListener('click', function() {
+                if (selectedHeroes.length !== 5) {
+                    alert('Please select exactly 5 heroes for the enemy lineup.');
+                    return;
+                }
+                enemyLineupInput.value = selectedHeroes.join(',');
+                document.getElementById('boostSection').style.display = 'block';
+            });
+        }
+
+        // Handle boost addition
+        let boostCount = 1;
+        document.getElementById('addBoost').addEventListener('click', function() {
+            const boostFields = document.getElementById('boostFields');
+            const div = document.createElement('div');
+            div.className = 'boost-field';
+            div.innerHTML = `
+                <select name="boosts[${boostCount}][type]">
+                    <option value="">Select Boost</option>
+                    <option value="hp">HP</option>
+                    <option value="atk">ATK</option>
+                    <option value="matk">MATK</option>
+                    <option value="def">DEF</option>
+                    <option value="mdef">MDEF</option>
+                    <option value="physicalCritical">Physical Critical</option>
+                    <option value="magicCritical">Magic Critical</option>
+                </select>
+                <input type="number" name="boosts[${boostCount}][value]" placeholder="Value" step="0.01" min="0" max="100" />
+            `;
+            boostFields.appendChild(div);
+            boostCount++;
+        });
+
+        // Handle form submission
+        document.getElementById('simulationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                enemyLineup: document.getElementById('enemyLineup').value.split(','),
+                boosts: Array.from(document.querySelectorAll('.boost-field')).map(field => ({
+                    type: field.querySelector('select').value,
+                    value: parseFloat(field.querySelector('input').value)
+                })).filter(boost => boost.type && !isNaN(boost.value))
+            };
+
+            try {
+                const response = await fetch('/api/simulate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                const resultDiv = document.getElementById('simulationResult');
+                resultDiv.innerHTML = `
+                    <h2>Simulation Result</h2>
+                    <p>${result.message}</p>
+                `;
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                console.error('Simulation error:', error);
+                alert('Error running simulation. Please try again.');
+            }
+        });
+
+        // Handle logout
+        document.getElementById('logoutButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            window.location.href = '/login.html';
+        });
+    </script>
+</body>
+</html>

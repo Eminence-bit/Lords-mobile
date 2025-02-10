@@ -6,15 +6,14 @@ const Hero = require('../models/heroes.model');
 router.get('/', authenticate, adminOnly, async (req, res) => {
   try {
     const heroes = await Hero.find();
-    res.render('admininventory', { heroes });
-
+    res.json(heroes);
   } catch (err) {
-    res.render('admininventory', { heroes: [] });
+    res.status(500).send(err.message);
   }
 });
 
 router.get('/create', authenticate, adminOnly, (req, res) => {
-  res.render('createhero');
+  res.sendFile(path.join(__dirname, 'views', 'createhero.html'));
 });
 
 router.post('/create', authenticate, adminOnly, async (req, res) => {

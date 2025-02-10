@@ -4,16 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lords Mobile Battle Simulator</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
   <header>
     <nav>
       <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/login">Sign In</a></li>
-        <li><a href="/register">Sign Up</a></li>
-        <li><a href="/contact">Contact Us</a></li>
+        <li><a href="login.html">Sign In</a></li>
+        <li><a href="register.html">Sign Up</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
       </ul>
     </nav>
   </header>
@@ -27,8 +26,8 @@
         Whether you're a casual player or a seasoned strategist, our tool offers personalized recommendations based on your hero inventory, ensuring you always stay ahead in battle.
       </p>
       <div class="actions">
-        <a href="/login" class="btn">Sign In</a>
-        <a href="/register" class="btn">Sign Up</a>
+        <a href="/login.html" class="btn">Sign In</a>
+        <a href="/register.html" class="btn">Sign Up</a>
       </div>
     </section>
     <section class="promo">
@@ -47,7 +46,17 @@
     </section>
   </main>
   <footer>
-    <p>&copy; <%= new Date().getFullYear() %> Lords Mobile Battle Simulator. All rights reserved.</p>
+    <p>&copy; <script>document.write(new Date().getFullYear())</script> Lords Mobile Battle Simulator. All rights reserved.</p>
   </footer>
+
+  <script>
+    // Check if user is already logged in
+    document.addEventListener('DOMContentLoaded', function() {
+      const token = localStorage.getItem('token');
+      if (token) {
+        window.location.href = '/home.html';
+      }
+    });
+  </script>
 </body>
 </html>

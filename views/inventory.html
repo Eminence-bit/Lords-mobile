@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Inventory</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/home.html">Dashboard</a></li>
+                <li><a href="/simulation.html">Simulation</a></li>
+                <li><a href="#" id="logoutButton">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1>Your Inventory</h1>
+        <div id="inventoryList">
+            <!-- Content will be dynamically loaded here -->
+        </div>
+    </main>
+    <footer>
+        <p>&copy; <script>document.write(new Date().getFullYear())</script> Lords Mobile Battle Simulator</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+            const role = localStorage.getItem('userRole');
+           if(role!=='admin'){
+
+           try {
+                const response = await fetch('/api/inventory', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch inventory');
+                }
+
+                const inventory = await response.json();
+                const inventoryList = document.getElementById('inventoryList');
+
+                if (inventory && inventory.length > 0) {
+                    const ul = document.createElement('ul');
+                    inventory.forEach(hero => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <div class="hero-info">
+                                <span class="hero-name">${hero.name}</span>
+                                <span class="hero-type">${hero.heroType}</span>
+                            </div>
+                            <div class="hero-stats">
+                                HP: ${hero.stats.hp} | ATK: ${hero.stats.atk}
+                            </div>
+                        `;
+                        ul.appendChild(li);
+                    });
+                    inventoryList.appendChild(ul);
+                } else {
+                    inventoryList.innerHTML = '<p class="empty-message">You have no heroes in your inventory.</p>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('inventoryList').innerHTML = 
+                    '<p class="empty-message">Error loading inventory. Please try again later.</p>';
+            }
+          }
+          else{
+            const response = await fetch('/api/admin/heroes', {
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                }
+              });
+              if (!response.ok) {
+                throw new Error('Failed to fetch heroes');
+              }
+              else{
+                const heroes = await response.json();
+                let tableHtml = `
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>HP</th>
+                                <th>ATK</th>
+                                <th>MATK</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                heroes.forEach(hero => {
+                    tableHtml += `
+                        <tr>
+                            <td>${hero.name}</td>
+                            <td>${hero.heroType}</td>
+                            <td>${hero.stats.hp}</td>
+                            <td>${hero.stats.atk}</td>
+                            <td>${hero.stats.matk}</td>
+                            <td class="action-buttons">
+                                <a href="/admin/heroes/edit/${hero._id}" class="edit-btn">Edit</a>
+                                <button onclick="deleteHero('${hero._id}')" class="delete-btn">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tableHtml += '</tbody></table>';
+                document.getElementById('heroesTable').innerHTML = tableHtml;
+              }
+          }
+        });
+
+        // Handle logout
+        document.getElementById('logoutButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            window.location.href = '/login.html';
+        });
+    </script>
+</body>
+</html>

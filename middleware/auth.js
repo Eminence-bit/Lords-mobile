@@ -2,11 +2,9 @@ const jwt = require('jsonwebtoken');
  require('dotenv').config();
  
 exports.authenticate = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader)
-    return res.status(401).json({ error: 'Unauthorized' });
-  const token = authHeader.split(' ')[1];
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+ const token = req.query.token || req.headers.authorization.split(' ')[1];
+ console.log(token);
+  jwt.verify(token, process.env.JWT_SECRET_TOKEN, (err, decoded) => {
     if (err)
       return res.status(401).json({ error: 'Unauthorized' });
     req.user = decoded;

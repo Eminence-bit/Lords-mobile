@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="/login.html">Sign In</a></li>
+        <li><a href="/contact.html">Contact Us</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <h1>Sign Up</h1>
+    <form id="registerForm">
+      <div id="errorMessage"></div>
+      <input type="text" id="username" name="username" placeholder="Username" required 
+             minlength="3" maxlength="20" pattern="[A-Za-z0-9_]+">
+      <input type="email" id="email" name="email" placeholder="Email" required>
+      <input type="password" id="password" name="password" placeholder="Password" required 
+             minlength="6" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}">
+      <button type="submit">Register</button>
+    </form>
+  </main>
+  <footer>
+    <p>&copy; <script>document.write(new Date().getFullYear())</script> Lords Mobile Battle Simulator</p>
+  </footer>
+
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const errorMessage = document.getElementById('errorMessage');
+      errorMessage.style.display = 'none';
+
+      try {
+        const response = await fetch('/api/users/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            username: document.getElementById('username').value,
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Registration successful - redirect to login
+          window.location.href = '/login.html';
+        } else {
+          throw new Error(data.error || 'Registration failed');
+        }
+      } catch (error) {
+        errorMessage.textContent = error.message;
+        errorMessage.style.display = 'block';
+      }
+    });
+
+    // Password validation helper
+    document.getElementById('password').addEventListener('input', function(e) {
+      const password = e.target.value;
+      const isValid = password.match(/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/);
+      e.target.setCustomValidity(isValid ? '' : 'Password must contain at least 6 characters, including uppercase, lowercase, and numbers');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Inventory</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .admin-table th, 
+        .admin-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .admin-table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+        .admin-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .edit-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 5px 10px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+            padding: 5px 10px;
+        }
+        .header-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .create-btn {
+        background-color: #28a745;
+        color: white;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .create-btn:hover {
+        background-color: #218838;
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/home.html">Home</a></li>
+                <li><a href="/admin/heroes">Admin Inventory</a></li>
+                <li><a href="/simulation.html">Simulation</a></li>
+                <li><a href="#" id="logoutButton">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+      <div class="header-actions">
+          <h1>Admin Inventory - Manage Heroes</h1>
+          <a href="createhero.html" class="create-btn">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Create New Hero
+          </a>
+      </div>
+      <div id="heroesTable">
+          <!-- The table will be populated by JavaScript -->
+      </div>
+  </main>
+    <footer>
+        <p>&copy; <script>document.write(new Date().getFullYear())</script> Lords Mobile Battle Simulator</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Check if user is admin
+            const userRole = localStorage.getItem('userRole');
+            if (userRole !== 'admin') {
+                window.location.href = 'home.html';
+                return;
+            }
+            
+            fetch('/admin/heroes', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Unauthorized');
+                return response.json();
+            })
+            .then(data => {
+                let tableHtml = `
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>HP</th>
+                                <th>ATK</th>
+                                <th>MATK</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                data.forEach(hero => {
+                    tableHtml += `
+                        <tr>
+                            <td>${hero.name}</td>
+                            <td>${hero.heroType}</td>
+                            <td>${hero.stats.hp}</td>
+                            <td>${hero.stats.atk}</td>
+                            <td>${hero.stats.matk}</td>
+                            <td class="action-buttons">
+                                <a href="/admin/heroes/edit/${hero._id}" class="edit-btn">Edit</a>
+                                <button onclick="deleteHero('${hero._id}')" class="delete-btn">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                tableHtml += '</tbody></table>';
+                document.getElementById('heroesTable').innerHTML = tableHtml;
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('heroesTable').innerHTML = 
+                    `${err.message === 'Unauthorized' ? '<p class="empty-message">Unauthorized</p>' : '<p class="empty-message">Error loading inventory. Please try again later.</p>'}`;
+            });
+        });
+
+        // Handle hero deletion
+        async function deleteHero(heroId) {
+            if (!confirm('Are you sure you want to delete this hero?')) return;
+
+            const token = localStorage.getItem('token');
+            try {
+                const response = await fetch(`/api/admin/heroes/${heroId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to delete hero');
+                
+                // Refresh the page to show updated list
+                window.location.reload();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to delete hero. Please try again.');
+            }
+        }
+
+        // Handle logout
+        document.getElementById('logoutButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('userRole');
+            window.location.href = '/login.html';
+        });
+    </script>
+</body>
+</html>

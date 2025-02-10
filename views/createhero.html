@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create New Hero</title>
+  <!-- <link rel="stylesheet" href="/css/styles.css"> -->
+  <style>
+    :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #2196F3;
+            --accent-color: #FF9800;
+            --error-color: #f44336;
+            --text-color: #333;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        nav {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            box-shadow: var(--box-shadow);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--primary-color);
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #eee;
+        }
+
+        .form-section {
+            background: #fff;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--box-shadow);
+        }
+
+        .image-upload {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f6f9fc 0%, #f1f4f8 100%);
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+        }
+
+        .image-preview {
+            width: 250px;
+            height: 250px;
+            border: 3px dashed var(--secondary-color);
+            border-radius: var(--border-radius);
+            margin: 1rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .image-preview:hover {
+            border-color: var(--primary-color);
+            transform: scale(1.02);
+        }
+
+        .custom-file-input {
+            margin: 1rem 0;
+        }
+
+        .custom-file-label {
+            background: var(--secondary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .custom-file-label:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.25);
+            outline: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .skill-group {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .skill-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .skill-group h4 {
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #eee;
+        }
+
+        button[type="submit"] {
+            background: linear-gradient(45deg, var(--primary-color), #45a049);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background: linear-gradient(45deg, #45a049, #388e3c);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        #message {
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .error {
+            background-color: #ffebee;
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="/admin">Admin Inventory</a></li>
+        <li><a href="simulation.html">Simulation</a></li>
+        <li><a href="#" id="logoutButton">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <h1>Create New Hero</h1>
+    <form id="createHeroForm" enctype="multipart/form-data">
+      <!-- Image Upload Section -->
+      <div class="image-upload">
+        <label>Hero Image:</label>
+        <div class="custom-file-input">
+          <input type="file" id="heroImage" name="heroImage" accept="image/*" required>
+          <label for="heroImage" class="custom-file-label">Choose Image</label>
+        </div>
+        <div class="image-preview" id="imagePreview">
+          <span>Image Preview</span>
+        </div>
+      </div>
+      
+      <!-- Basic Hero Information -->
+      <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="heroType">Hero Type:</label>
+        <select id="heroType" name="heroType" required>
+          <option value="">Select Hero Type</option>
+          <option value="str">STR</option>
+          <option value="int">INT</option>
+          <option value="agi">AGI</option>
+        </select>
+      </div>
+      
+      <!-- Base Attributes -->
+      <h3>Base Attributes</h3>
+      <div class="form-group">
+        <label for="strength">Strength:</label>
+        <input type="number" id="strength" name="baseAttributes[strength]" required min="1">
+      </div>
+      <div class="form-group">
+        <label for="intelligence">Intelligence:</label>
+        <input type="number" id="intelligence" name="baseAttributes[intelligence]" required min="1">
+      </div>
+      <div class="form-group">
+        <label for="dexterity">Dexterity:</label>
+        <input type="number" id="dexterity" name="baseAttributes[dexterity]" required min="1">
+      </div>
+      
+      <!-- Stats -->
+      <h3>Stats</h3>
+      <div class="form-group">
+        <label for="hp">HP:</label>
+        <input type="number" id="hp" name="stats[hp]" required min="1">
+      </div>
+      <div class="form-group">
+        <label for="atk">ATK:</label>
+        <input type="number" id="atk" name="stats[atk]" required min="1">
+      </div>
+      <div class="form-group">
+        <label for="matk">MATK:</label>
+        <input type="number" id="matk" name="stats[matk]" required min="1">
+      </div>
+      <div class="form-group">
+        <label for="def">DEF:</label>
+        <input type="number" id="def" name="stats[def]" required min="1">
+      </div>
+      <div class="form-group">
+        <label for="mdef">MDEF:</label>
+        <input type="number" id="mdef" name="stats[mdef]" required min="1">
+      </div>
+      <div class="form-group">
+        <label for="physicalCritical">Physical Critical (%):</label>
+        <input type="number" id="physicalCritical" name="stats[physicalCritical]" required min="0" max="100">
+      </div>
+      <div class="form-group">
+        <label for="magicCritical">Magic Critical (%):</label>
+        <input type="number" id="magicCritical" name="stats[magicCritical]" required min="0" max="100">
+      </div>
+      
+      <!-- Skills Section -->
+      <h3>Skills</h3>
+      <div id="skillsSection">
+        <!-- Skill 1 -->
+        <div class="skill-group">
+          <h4>Skill 1</h4>
+          <div class="form-group">
+            <label for="skill1Name">Skill Name:</label>
+            <input type="text" id="skill1Name" name="skills[0][name]" required>
+          </div>
+          <div class="form-group">
+            <label for="skill1Description">Description:</label>
+            <textarea id="skill1Description" name="skills[0][description]" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="skill1BaseDamage">Base Damage:</label>
+            <input type="number" id="skill1BaseDamage" name="skills[0][baseDamage]" required>
+          </div>
+          <div class="form-group">
+            <label for="skill1DamageModifier">Damage Modifier:</label>
+            <input type="number" step="0.01" id="skill1DamageModifier" name="skills[0][damageModifier]" required>
+          </div>
+          <div class="form-group">
+            <label for="skill1Cooldown">Cooldown (seconds):</label>
+            <input type="number" id="skill1Cooldown" name="skills[0][cooldown]" required>
+          </div>
+          <div class="form-group">
+            <label for="skill1Type">Skill Type:</label>
+            <select id="skill1Type" name="skills[0][type]" required>
+              <option value="">Select Skill Type</option>
+              <option value="physical">Physical</option>
+              <option value="magical">Magical</option>
+              <option value="passive">Passive</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Skill 2 -->
+        <div class="skill-group">
+          <h4>Skill 2</h4>
+          <div class="form-group">
+            <label for="skill2Name">Skill Name:</label>
+            <input type="text" id="skill2Name" name="skills[1][name]" required>
+          </div>
+          <div class="form-group">
+            <label for="skill2Description">Description:</label>
+            <textarea id="skill2Description" name="skills[1][description]" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="skill2BaseDamage">Base Damage:</label>
+            <input type="number" id="skill2BaseDamage" name="skills[1][baseDamage]" required>
+          </div>
+          <div class="form-group">
+            <label for="skill2DamageModifier">Damage Modifier:</label>
+            <input type="number" step="0.01" id="skill2DamageModifier" name="skills[1][damageModifier]" required>
+          </div>
+          <div class="form-group">
+            <label for="skill2Cooldown">Cooldown (seconds):</label>
+            <input type="number" id="skill2Cooldown" name="skills[1][cooldown]" required>
+          </div>
+          <div class="form-group">
+            <label for="skill2Type">Skill Type:</label>
+            <select id="skill2Type" name="skills[1][type]" required>
+              <option value="">Select Skill Type</option>
+              <option value="physical">Physical</option>
+              <option value="magical">Magical</option>
+              <option value="passive">Passive</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Skill 3 -->
+        <div class="skill-group">
+          <h4>Skill 3</h4>
+          <div class="form-group">
+            <label for="skill3Name">Skill Name:</label>
+            <input type="text" id="skill3Name" name="skills[2][name]" required>
+          </div>
+          <div class="form-group">
+            <label for="skill3Description">Description:</label>
+            <textarea id="skill3Description" name="skills[2][description]" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="skill3BaseDamage">Base Damage:</label>
+            <input type="number" id="skill3BaseDamage" name="skills[2][baseDamage]" required>
+          </div>
+          <div class="form-group">
+            <label for="skill3DamageModifier">Damage Modifier:</label>
+            <input type="number" step="0.01" id="skill3DamageModifier" name="skills[2][damageModifier]" required>
+          </div>
+          <div class="form-group">
+            <label for="skill3Cooldown">Cooldown (seconds):</label>
+            <input type="number" id="skill3Cooldown" name="skills[2][cooldown]" required>
+          </div>
+          <div class="form-group">
+            <label for="skill3Type">Skill Type:</label>
+            <select id="skill3Type" name="skills[2][type]" required>
+              <option value="">Select Skill Type</option>
+              <option value="physical">Physical</option>
+              <option value="magical">Magical</option>
+              <option value="passive">Passive</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Skill 4 -->
+        <div class="skill-group">
+          <h4>Skill 4</h4>
+          <div class="form-group">
+            <label for="skill4Name">Skill Name:</label>
+            <input type="text" id="skill4Name" name="skills[3][name]" required>
+          </div>
+          <div class="form-group">
+            <label for="skill4Description">Description:</label>
+            <textarea id="skill4Description" name="skills[3][description]" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="skill4BaseDamage">Base Damage:</label>
+            <input type="number" id="skill4BaseDamage" name="skills[3][baseDamage]" required>
+          </div>
+          <div class="form-group">
+            <label for="skill4DamageModifier">Damage Modifier:</label>
+            <input type="number" step="0.01" id="skill4DamageModifier" name="skills[3][damageModifier]" required>
+          </div>
+          <div class="form-group">
+            <label for="skill4Cooldown">Cooldown (seconds):</label>
+            <input type="number" id="skill4Cooldown" name="skills[3][cooldown]" required>
+          </div>
+          <div class="form-group">
+            <label for="skill4Type">Skill Type:</label>
+            <select id="skill4Type" name="skills[3][type]" required>
+              <option value="">Select Skill Type</option>
+              <option value="physical">Physical</option>
+              <option value="magical">Magical</option>
+              <option value="passive">Passive</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <button type="submit">Create Hero</button>
+    </form>
+    <div id="message"></div>
+  </main>
+  <footer>
+    <p>&copy; <script>document.write(new Date().getFullYear())</script> Lords Mobile Battle Simulator</p>
+  </footer>
+  
+  <script>
+    // Image preview functionality
+    document.getElementById('heroImage').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const preview = document.getElementById('imagePreview');
+      const fileLabel = document.querySelector('.custom-file-label');
+      
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.innerHTML = `<img src="${e.target.result}" alt="Hero preview">`;
+          fileLabel.textContent = file.name;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        preview.innerHTML = '<span>Image Preview</span>';
+        fileLabel.textContent = 'Choose Image';
+      }
+    });
+  
+    // Form submission
+    document.getElementById('createHeroForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData();
+      const heroData = {
+        name: document.getElementById('name').value,
+        heroType: document.getElementById('heroType').value,
+        baseAttributes: {
+          strength: parseInt(document.getElementById('strength').value),
+          intelligence: parseInt(document.getElementById('intelligence').value),
+          dexterity: parseInt(document.getElementById('dexterity').value)
+        },
+        stats: {
+          hp: parseInt(document.getElementById('hp').value),
+          atk: parseInt(document.getElementById('atk').value),
+          matk: parseInt(document.getElementById('matk').value),
+          def: parseInt(document.getElementById('def').value),
+          mdef: parseInt(document.getElementById('mdef').value),
+          physicalCritical: parseInt(document.getElementById('physicalCritical').value),
+          magicCritical: parseInt(document.getElementById('magicCritical').value)
+        }
+      };
+  
+      formData.append('heroData', JSON.stringify(heroData));
+      formData.append('heroImage', document.getElementById('heroImage').files[0]);
+      // Skills will be sent automatically by FormData as they have proper name attributes.
+  
+      try {
+        const response = await fetch('/admin/heroes/create', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+          },
+          body: formData
+        });
+  
+        if (response.ok) {
+          window.location.href = '/admin';
+        } else {
+          const data = await response.json();
+          throw new Error(data.message || 'Error creating hero');
+        }
+      } catch (error) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.className = 'error';
+        messageDiv.textContent = error.message;
+        messageDiv.style.display = 'block';
+      }
+    });
+  
+    // Logout functionality
+    document.getElementById('logoutButton').addEventListener('click', function(e) {
+      e.preventDefault();
+      localStorage.removeItem('token');
+      localStorage.removeItem('userRole');
+      window.location.href = 'login.html';
+    });
+  </script>
+</body>
+</html>

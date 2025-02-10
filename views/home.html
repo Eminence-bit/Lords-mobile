@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="inventory.html">Inventory</a></li>
+                <li><a href="simulation.html">Simulation</a></li>
+                <li><a href="logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1 id="welcomeMessage">Welcome!</h1>
+        <div id="roleContent"></div>
+    </main>
+
+    <footer>
+        <p>&copy; <script>document.write(new Date().getFullYear())</script> Lords Mobile Battle Simulator</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get user data from localStorage
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+            const role = localStorage.getItem('userRole');
+
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Update welcome message
+            document.getElementById('welcomeMessage').textContent = `Welcome, ${username}!`;
+
+            // Create role-specific content
+            const roleContent = document.getElementById('roleContent');
+            if (role === 'admin') {
+                roleContent.innerHTML = `
+                    <p>You are logged in as an Admin.</p>
+                    <form action="/admin" method="get">
+                        <button type="submit">Manage Heroes</button>
+                        <input type="hidden" name="token" value="${token}">
+                        <input type="hidden" name="username" value="${username}">
+                        <input type="hidden" name="role" value="${role}">
+                    </form>
+                `;
+            } else {
+                roleContent.innerHTML = `
+                    <p>You are logged in as a User.</p>
+                    <form action="/inventory" method="get">
+                        <button type="submit">View Inventory</button>
+                        <input type="hidden" name="token" value="${token}">
+                        <input type="hidden" name="username" value="${username}">
+                        <input type="hidden" name="role" value="${role}">
+                    </form>
+                `;
+            }
+        });
+        document.querySelector('a[href="logout"]').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('userRole');
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>

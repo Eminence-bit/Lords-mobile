@@ -6,63 +6,80 @@ const cors = require('cors');
 const app = express();
 require('./config/db');
 
-app.use(helmet());
+// Configure Helmet for security while allowing static files
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      // defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+    },
+  },
+}));
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// API Routes
 const heroRoutes = require('./routers/heroes.routes');
 const constellationRoutes = require('./routers/constellation.routes');
 const userRoutes = require('./routers/user.routes');
-const inventoryRoutes = require('./routers/inventoryRoutes');
 const adminHeroRoutes = require('./routers/adminHeroRoutes');
 
 app.use('/api/heroes', heroRoutes);
 app.use('/api/constellations', constellationRoutes);
 app.use('/api/users', userRoutes);
-app.use('/inventory', inventoryRoutes);
-app.use('/admin/heroes', adminHeroRoutes);
+app.use('/admin/heroes', adminHeroRoutes); // Fixed the path
 
+// Remove view engine setup as we're using static HTML
+// app.set('view engine', 'ejs');
+// app.set('views', path.join(__dirname, 'views'));
 
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+// Serve static HTML files
+app.get('/index.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'index.html'));
+});
 
 app.get('/', (req, res) => {
-  res.render('index');
-});
-app.get('/login', (req, res) => {
-  res.render('login');
-});
-app.get('/register', (req, res) => {
-  res.render('register');
-});
-app.get('/inventory', (req, res) => {
-  const inventory = [];
-  try{
-    res.render('inventory', { inventory });
-  }catch(err){
-    res.status(500).send(err.message);
-  }
+  res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
-const Hero = require('./models/heroes.model');
-
-app.get('/simulation', async (req, res) => {
-    try {
-      const heroes = await Hero.find();
-      res.render('simulation', { heroes });
-    } catch (error) {
-      res.render('simulation', { heroes: [] });
-    }
-  });
-app.get('/contact', (req, res) => {
-  res.render('contact');
+app.get('/login.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
+
+app.get('/home.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'home.html'));
+});
+
+app.get('/register.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'register.html'));
+});
+
+app.get('/inventory.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'inventory.html'));
+});
+
+app.get('/simulation.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'simulation.html'));
+});
+
+app.get('/contact.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'contact.html'));
+});
+
 app.get('/logout', (req, res) => {
-  localStorage.clear();
   res.redirect('/');
 });
 
-const PORT = process.env.PORT;
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'admininventory.html'));
+});
+
+app.get('/createhero.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'createhero.html'));
+}); 
+
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log('Server running on port ' + PORT));
