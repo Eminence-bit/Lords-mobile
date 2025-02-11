@@ -20,7 +20,7 @@ router.post('/create', authenticate, adminOnly, async (req, res) => {
   try {
     const hero = new Hero(req.body);
     await hero.save();
-    res.redirect('/admin/heroes');
+    res.redirect('admininventory.html');
   } catch (err) {
     res.status(500).send(err.message);
   }

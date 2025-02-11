@@ -1,4 +1,3 @@
--mobile/public/simulation.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,8 +10,8 @@
     <header>
         <nav>
             <ul>
-                <li><a href="/home.html">Dashboard</a></li>
-                <li><a href="/inventory.html">Inventory</a></li>
+                <li><a href="home.html">Dashboard</a></li>
+                <li><a href="index.html">Inventory</a></li>
                 <li><a href="#" id="logoutButton">Logout</a></li>
             </ul>
         </nav>
@@ -28,7 +27,7 @@
                 <input type="hidden" id="enemyLineup" name="enemyLineup">
                 <button type="button" id="confirmLineup">Confirm Lineup</button>
             </section>
-            <section id="boostSection" style="display:none;">
+            <section id="boostSection" >
                 <h2>Select Constellation Boosts</h2>
                 <div id="boostFields">
                     <div class="boost-field">
@@ -49,7 +48,7 @@
             </section>
             <button type="submit">Simulate Battle</button>
         </form>
-        <div id="simulationResult" class="simulation-result" style="display:none;"></div>
+        <div id="simulationResult" class="simulation-result" ></div>
     </main>
     <footer>
         <p>&copy; <script>document.write(new Date().getFullYear())</script> Lords Mobile Battle Simulator</p>
@@ -162,14 +161,15 @@
             };
 
             try {
-                const response = await fetch('/api/simulate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: JSON.stringify(formData)
-                });
+                async function runSimulation(simulationData) {
+                    const response = await fetch('http://localhost:5000/simulate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(simulationData)
+                    });
+                    const data = await response.json();
+                    // Display data.simulationResult on the page
+}
 
                 const result = await response.json();
                 const resultDiv = document.getElementById('simulationResult');
@@ -190,6 +190,8 @@
             localStorage.removeItem('token');
             window.location.href = '/login.html';
         });
+
+        
     </script>
 </body>
 </html>

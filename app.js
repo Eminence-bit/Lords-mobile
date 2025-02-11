@@ -6,6 +6,7 @@ const cors = require('cors');
 const app = express();
 require('./config/db');
 
+
 // Configure Helmet for security while allowing static files
 app.use(helmet({
   contentSecurityPolicy: {
@@ -21,7 +22,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// API Routes
 const heroRoutes = require('./routers/heroes.routes');
 const constellationRoutes = require('./routers/constellation.routes');
 const userRoutes = require('./routers/user.routes');
@@ -30,13 +30,8 @@ const adminHeroRoutes = require('./routers/adminHeroRoutes');
 app.use('/api/heroes', heroRoutes);
 app.use('/api/constellations', constellationRoutes);
 app.use('/api/users', userRoutes);
-app.use('/admin/heroes', adminHeroRoutes); // Fixed the path
+app.use('/admin/heroes', adminHeroRoutes); 
 
-// Remove view engine setup as we're using static HTML
-// app.set('view engine', 'ejs');
-// app.set('views', path.join(__dirname, 'views'));
-
-// Serve static HTML files
 app.get('/index.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
@@ -80,6 +75,8 @@ app.get('/admin', (req, res) => {
 app.get('/createhero.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'createhero.html'));
 }); 
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log('Server running on port ' + PORT));

@@ -40,6 +40,7 @@ exports.login = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+
 exports.getInventory = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).populate("inventory");
@@ -48,6 +49,7 @@ exports.getInventory = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 exports.updateInventory = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);

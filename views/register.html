@@ -10,9 +10,9 @@
   <header>
     <nav>
       <ul>
-        <li><a href="/index.html">Home</a></li>
-        <li><a href="/login.html">Sign In</a></li>
-        <li><a href="/contact.html">Contact Us</a></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="login.html">Sign In</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
       </ul>
     </nav>
   </header>
@@ -56,7 +56,7 @@
 
         if (response.ok) {
           // Registration successful - redirect to login
-          window.location.href = '/login.html';
+          window.location.href = 'login.html';
         } else {
           throw new Error(data.error || 'Registration failed');
         }

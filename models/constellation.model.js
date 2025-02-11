@@ -19,6 +19,7 @@ const ConstellationSchema = new Schema({
     mdef: { type: Number, default: 0 },
     physicalCritical: { type: Number, default: 0 },
     magicCritical: { type: Number, default: 0 }
+    
   }
 });
 module.exports = mongoose.model('Constellation', ConstellationSchema);
